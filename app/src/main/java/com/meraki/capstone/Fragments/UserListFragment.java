@@ -25,6 +25,7 @@ import com.meraki.capstone.R;
 import com.meraki.capstone.RecyclerTouchListener;
 import com.meraki.capstone.RecyclerviewAdapter_UserInfo;
 import com.meraki.capstone.ViewDialog_AddUser;
+import com.meraki.capstone.ViewDialog_EditUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ public class UserListFragment extends Fragment {
     public static RecyclerTouchListener touchListener;
 
     static ViewDialog_AddUser viewDialog_addUser;
+    static ViewDialog_EditUser viewDialog_editUser;
     View view;
     public static List<FB_Users> taskList = new ArrayList<>();
 
@@ -57,6 +59,9 @@ public class UserListFragment extends Fragment {
         viewDialog_addUser = new ViewDialog_AddUser(getActivity());
         viewDialog_addUser.initiateDialog();
 
+        viewDialog_editUser = new ViewDialog_EditUser(getActivity());
+        viewDialog_editUser.initiateDialog();
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerviewAdapter_userInfo = new RecyclerviewAdapter_UserInfo(getActivity());
         taskList = new ArrayList<>();
@@ -67,11 +72,11 @@ public class UserListFragment extends Fragment {
             @Override
             public void onRowClicked(int position) {
 
-                if(taskList.get(position).getName().equals("NA")){
+                if (taskList.get(position).getName().equals("NA")) {
 
-                    viewDialog_addUser.showDialog();
-                }else{
-//edit dialog
+                    viewDialog_addUser.showDialog(taskList.get(position).getId(), taskList, position);
+                } else {
+                    viewDialog_editUser.showDialog(taskList.get(position).getId(), taskList.get(position).getKeycode(), taskList.get(position).getName(), taskList.get(position).isMaster(), taskList, position);
                 }
 
             }
@@ -90,12 +95,12 @@ public class UserListFragment extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    if(!taskList.isEmpty()){
+                    if (!taskList.isEmpty()) {
                         taskList.clear();
                     }
-                    for (DataSnapshot postSnapshot: snapshot.getChildren()) {
+                    for (DataSnapshot postSnapshot : snapshot.getChildren()) {
 
-                      //  Log.w(TAG, "snapshot: " + postSnapshot.getKey());
+                        //  Log.w(TAG, "snapshot: " + postSnapshot.getKey());
 
                         final FB_Users fb_users = postSnapshot.getValue(FB_Users.class);
 

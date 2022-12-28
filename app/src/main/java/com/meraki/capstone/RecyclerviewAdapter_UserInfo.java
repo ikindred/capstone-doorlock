@@ -1,5 +1,6 @@
 package com.meraki.capstone;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -48,7 +49,7 @@ public class RecyclerviewAdapter_UserInfo extends RecyclerView.Adapter<Recyclerv
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final MyViewHolder holder, @SuppressLint("RecyclerView") int position) {
         FB_Users = usersList.get(position);
 
 
@@ -61,14 +62,17 @@ public class RecyclerviewAdapter_UserInfo extends RecyclerView.Adapter<Recyclerv
             holder.relAddData.setVisibility(View.GONE);
             holder.relData.setVisibility(View.VISIBLE);
 
-            holder.usersKey.setText(FB_Users.getKeycode());
+            holder.usersKey.setText("Key: "+ FB_Users.getKeycode());
             holder.usersName.setText(FB_Users.getName());
 
 
             if (FB_Users.isMaster() == false) {
                 holder.radioMaster.setChecked(false);
+                holder.masterStatus.setVisibility(View.GONE);
             } else {
                 holder.radioMaster.setChecked(true);
+                holder.masterStatus.setVisibility(View.VISIBLE);
+                //Toast.makeText(mContext, FB_Users.getName() + " is the Master", Toast.LENGTH_SHORT).show();
             }
 
             Log.i(TAG, FB_Users.getId());
@@ -96,30 +100,27 @@ public class RecyclerviewAdapter_UserInfo extends RecyclerView.Adapter<Recyclerv
         }
 
 
-
     }
 
 
-    public void setMasterStatus( int position) {
-        try{
+    public void setMasterStatus(int position) {
+        try {
 
 
-              for(int a = 0; a < 5; a++) {
-                  FB_Users = usersList.get(a);
-                  if(a == position){
-                      FirebaseDatabase.getInstance().getReference().child("Valid").child(FB_Users.getId()).child("master").setValue(true);
+            for (int a = 0; a < 5; a++) {
+                FB_Users = usersList.get(a);
+                if (a == position) {
+                    FirebaseDatabase.getInstance().getReference().child("Valid").child(FB_Users.getId()).child("master").setValue(true);
 
-                  }else{
-                      FirebaseDatabase.getInstance().getReference().child("Valid").child(FB_Users.getId()).child("master").setValue(false);
+                } else {
+                    FirebaseDatabase.getInstance().getReference().child("Valid").child(FB_Users.getId()).child("master").setValue(false);
 
-                  }
-              }
-
-
+                }
+            }
 
 
-        }catch (Exception e){
-            Log.d(TAG,  e.getMessage());
+        } catch (Exception e) {
+            Log.d(TAG, e.getMessage());
         }
 
     }
@@ -135,8 +136,8 @@ public class RecyclerviewAdapter_UserInfo extends RecyclerView.Adapter<Recyclerv
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-        public static TextView usersKey;
-        public static TextView usersName;
+
+        public static TextView usersKey, usersName, masterStatus;
         public static RadioButton radioMaster;
         public static RelativeLayout relData, relAddData;
 
@@ -144,6 +145,7 @@ public class RecyclerviewAdapter_UserInfo extends RecyclerView.Adapter<Recyclerv
             super(itemView);
             usersKey = itemView.findViewById(R.id.usersKey);
             usersName = itemView.findViewById(R.id.usersName);
+            masterStatus = itemView.findViewById(R.id.masterStatus);
             radioMaster = itemView.findViewById(R.id.radioMaster);
 
             relData = itemView.findViewById(R.id.rel_data);

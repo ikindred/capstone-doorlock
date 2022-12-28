@@ -25,9 +25,9 @@
         />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:background="@drawable/button_unlock"
+        android:background="@drawable/button_lock"
 
-        android:id="@+id/button_lock"
+        android:id="@+id/button_unlock"
         android:layout_width="200dp"
         android:layout_height="200dp"
 

@@ -1,12 +1,9 @@
 package com.meraki.capstone;
 
 import android.app.Activity;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
@@ -14,12 +11,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,15 +26,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 
-public class ViewDialog_AddUser {
+public class ViewDialog_EditUser {
 
     Activity activity;
     public static Dialog dialog;
@@ -49,21 +40,22 @@ public class ViewDialog_AddUser {
     EditText edittext_name;
     TextView keyvalue;
     RelativeLayout addKey;
-    Button adduser, button_setMaster;
+    Button edituser, deleteuser, button_setMaster;
     private DatabaseReference dbRef;
 
     ValueEventListener mSendEventListner;
     String ScannedKeyCode = "NA";
-    String UserID = "";
+    boolean masterStatus = false;
+    String UserID = "", ID, Name;
     ImageView imgSignal;
 
-    List<FB_Users> taskList = new ArrayList<>();
+    ProgressDialog dialogLoading;
+    public static List<FB_Users> taskList = new ArrayList<>();
     int myPosition = 0;
     FB_Users FB_Users;
-    ProgressDialog dialogLoading;
 
     //..we need the context else we can not create the dialog so get context in constructor
-    public ViewDialog_AddUser(Activity activity) {
+    public ViewDialog_EditUser(Activity activity) {
         this.activity = activity;
 
     }
@@ -73,45 +65,32 @@ public class ViewDialog_AddUser {
         dialog = new Dialog(activity);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        dialog.setContentView(R.layout.dialog_adduser);
+        dialog.setContentView(R.layout.dialog_edituser);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         dialog.setCancelable(true);
         taskList = new ArrayList<>();
         close = (ImageView) dialog.findViewById(R.id.close);
         edittext_name = (EditText) dialog.findViewById(R.id.edittext_name);
-        adduser = (Button) dialog.findViewById(R.id.button_adduser);
+        edituser = (Button) dialog.findViewById(R.id.button_edituser);
+        deleteuser = (Button) dialog.findViewById(R.id.button_deleteuser);
+        button_setMaster = (Button) dialog.findViewById(R.id.button_setMaster);
         keyvalue = (TextView) dialog.findViewById(R.id.keyvalue);
         addKey = (RelativeLayout) dialog.findViewById(R.id.addKey);
         imgSignal = (ImageView) dialog.findViewById(R.id.imgSignal);
 
-        button_setMaster = (Button) dialog.findViewById(R.id.button_setMaster);
 
-        adduser.setOnClickListener(new View.OnClickListener() {
+        deleteuser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 Log.i(TAG, edittext_name.getText().toString());
 
-
-                if (!edittext_name.getText().toString().isEmpty()) {
-
-                    if (!edittext_name.getText().toString().equalsIgnoreCase("NA")) {
-                        if (!ScannedKeyCode.equalsIgnoreCase("NA")) {
-                            DatabaseAddUser(edittext_name.getText().toString(), ScannedKeyCode);
-                        } else {
-                            Toast.makeText(activity, "Please click 'Scan RFID' to scan your ID", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(activity, "'NA' is not valid", Toast.LENGTH_SHORT).show();
-                    }
-
-                } else {
-                    Toast.makeText(activity, "Please add your name", Toast.LENGTH_SHORT).show();
-                }
-
+                FirebaseDatabase.getInstance().getReference().child("Valid").child(UserID).child("keycode").setValue("NA");
+                FirebaseDatabase.getInstance().getReference().child("Valid").child(UserID).child("name").setValue("NA");
+                FirebaseDatabase.getInstance().getReference().child("Valid").child(UserID).child("master").setValue(false);
+                hideDialog();
             }
         });
-
 
         button_setMaster.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,7 +111,6 @@ public class ViewDialog_AddUser {
             }
         });
 
-
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
@@ -148,8 +126,36 @@ public class ViewDialog_AddUser {
             }
         });
 
+        edituser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Log.i(TAG, edittext_name.getText().toString());
+
+
+                if (!edittext_name.getText().toString().isEmpty()) {
+
+                    if (!edittext_name.getText().toString().equalsIgnoreCase("NA")) {
+                        if (!ScannedKeyCode.equalsIgnoreCase("NA")) {
+
+                            DatabaseEditUser(edittext_name.getText().toString(), ScannedKeyCode);
+                        } else {
+                            Toast.makeText(activity, "Please click 'Update RFID' to update your ID", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(activity, "'NA' is not valid", Toast.LENGTH_SHORT).show();
+                    }
+
+                } else {
+                    Toast.makeText(activity, "Please add your name", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
 
         try {
+
 
             dbRef = FirebaseDatabase.getInstance().getReference().child("RegUser");
             ValueEventListener valueEventListener = new ValueEventListener() {
@@ -165,7 +171,7 @@ public class ViewDialog_AddUser {
                             ScannedKeyCode = fb_registerData.getNewkeycode();
                             imgSignal.setColorFilter(Color.argb(255, 67, 179, 36));
                             keyvalue.setText("Your ID: " + ScannedKeyCode);
-                           // Toast.makeText(activity, "Your ID: " + ScannedKeyCode, Toast.LENGTH_SHORT).show();
+                        //    Toast.makeText(activity, "Your ID: " + ScannedKeyCode, Toast.LENGTH_SHORT).show();
                             addKey.setEnabled(true);
                         } else if (fb_registerData.getNewkeycode().equals("NA") && fb_registerData.isNewuser() == false) {
 
@@ -186,6 +192,7 @@ public class ViewDialog_AddUser {
 
 
         } catch (Exception e) {
+
         }
 
 
@@ -198,7 +205,6 @@ public class ViewDialog_AddUser {
             public void onClick(View v) {
 
                 try {
-                    // rippleBackground.startRippleAnimation();
                     addKey.setEnabled(false);
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("RegUser").child("newuser");
                     databaseReference.setValue(true, new DatabaseReference.CompletionListener() {
@@ -207,7 +213,6 @@ public class ViewDialog_AddUser {
                         public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
 
                             keyvalue.setText("Scan your ID");
-
                             imgSignal.setColorFilter(Color.argb(255, 250, 140, 80));
                             FirebaseDatabase.getInstance().getReference().child("RegUser").child("newuser").setValue(true);
                         }
@@ -223,18 +228,29 @@ public class ViewDialog_AddUser {
     }
 
 
-    public void showDialog(String SelectedUserID, List<FB_Users> PasstaskList, int position) {
+    public void showDialog(String SelectedUserID, String SelectedID, String SelectedName, boolean Selectedmaster, List<FB_Users> PasstaskList, int position) {
 
         try {
 
-
             FirebaseDatabase.getInstance().getReference().child("RegUser").child("newkeycode").setValue("NA");
             FirebaseDatabase.getInstance().getReference().child("RegUser").child("newuser").setValue(false);
-            ScannedKeyCode = "NA";
-            UserID = SelectedUserID;
 
+            UserID = SelectedUserID;
             taskList = PasstaskList;
             myPosition = position;
+
+            ScannedKeyCode = SelectedID;
+            edittext_name.setText(SelectedName);
+            masterStatus = Selectedmaster;
+
+            if (masterStatus == true) {
+                button_setMaster.setEnabled(false);
+                button_setMaster.setText("Already set as Master");
+            } else {
+                button_setMaster.setEnabled(true);
+                button_setMaster.setText("Set as Master");
+            }
+
             dialog.show();
 
         } catch (Exception ex) {
@@ -263,7 +279,7 @@ public class ViewDialog_AddUser {
 
     }
 
-    private void DatabaseAddUser(String name, String addKey) {
+    private void DatabaseEditUser(String name, String addKey) {
 
         try {
 
@@ -271,7 +287,7 @@ public class ViewDialog_AddUser {
                     "Loading. Please wait...", true);
 
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-            FB_Users fb_users = new FB_Users(addKey, name, null, false);
+            FB_Users fb_users = new FB_Users(addKey, name, null, masterStatus);
             dialogLoading.show();
             databaseReference.child("Valid").child(UserID).setValue(fb_users, new DatabaseReference.CompletionListener() {
 
@@ -280,7 +296,6 @@ public class ViewDialog_AddUser {
                     dialogLoading.dismiss();
                     clear();
                     hideDialog();
-                    Toast.makeText(activity, "new user has been added", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -296,7 +311,7 @@ public class ViewDialog_AddUser {
     private void clear() {
         edittext_name.setText("");
 
-        keyvalue.setText("Scan RFID");
+        keyvalue.setText("Update RFID");
     }
 
 }

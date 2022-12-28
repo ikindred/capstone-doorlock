@@ -7,9 +7,70 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/lin_auth"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enter UnitCode for authentication"
+            android:textSize="18dp"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/border_textbox"
+            android:padding="8dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="-10dp"
+                android:hint="Code"
+
+                app:endIconMode= "clear_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edittext_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00FFFFFF"
+                    android:inputType="text" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/button_authenticate"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="40dp"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/button_solid"
+            android:gravity="center"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="Authenticate"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="15dp" />
+
+    </LinearLayout>
+
     <com.google.android.material.tabs.TabLayout
         android:layout_width="match_parent"
         android:id="@+id/tab_layout"
+        android:visibility="gone"
         android:layout_height="wrap_content">
 
         <com.google.android.material.tabs.TabItem
@@ -21,10 +82,16 @@
             android:layout_height="wrap_content"
             android:text="UserList"/>
 
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Logs"/>
+
 
     </com.google.android.material.tabs.TabLayout>
 
     <androidx.viewpager2.widget.ViewPager2
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/view_pager"

@@ -34,62 +34,32 @@
 
 
             <TextView
-                android:id="@+id/usersName"
+                android:id="@+id/usersKey"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:paddingRight="30dp"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="User Name"
+                android:text="Key: "
                 android:textColor="#000000"
-                android:textSize="20dp"
+                android:textSize="15dp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/usersKey"
+                android:layout_marginTop="3dp"
+                android:id="@+id/usersDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:paddingRight="60dp"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
-                android:text="Key: "
+                android:text="Date: "
                 android:textColor="#000000"
-                android:textSize="15dp"/>
+                android:textSize="13dp" />
 
 
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:id="@+id/l2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/radioMaster"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:gravity="center" />
-
-            <TextView
-                android:id="@+id/masterStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:paddingRight="30dp"
-                android:scrollHorizontally="true"
-                android:singleLine="true"
-                android:text="Master"
-                android:textColor="#61BF3F"
-                android:textSize="12dp"
-                android:textStyle="bold" />
 
 
         </LinearLayout>
@@ -97,24 +67,6 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:visibility="gone"
-        android:id="@+id/rel_addData"
-        android:layout_width="match_parent"
-        android:background="#EAEAEA"
-        android:layout_height="75dp">
-
-        <ImageView
-            android:id="@+id/image_lock"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_centerInParent="true"
-            android:elevation="5dp"
-            android:src="@drawable/plus_circle"
-            app:tint="#9E9E9E" />
-
-
-    </RelativeLayout>
 
 </androidx.cardview.widget.CardView>
 

@@ -7,6 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.meraki.capstone.Fragments.ButtonFragment;
 import com.meraki.capstone.Fragments.UserListFragment;
+import com.meraki.capstone.Fragments.UserLogsFragment;
 
 public class MyViewPageAdapter  extends FragmentStateAdapter {
     public MyViewPageAdapter(@NonNull FragmentActivity fragmentActivity) {
@@ -21,6 +22,8 @@ public class MyViewPageAdapter  extends FragmentStateAdapter {
                 return new ButtonFragment();
             case 1 :
                 return new UserListFragment();
+            case 2 :
+                return new UserLogsFragment();
             default :
                 return new ButtonFragment();
         }
@@ -28,6 +31,6 @@ public class MyViewPageAdapter  extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 2;
+        return 3;
     }
 }

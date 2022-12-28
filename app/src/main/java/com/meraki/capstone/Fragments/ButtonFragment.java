@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -53,22 +54,23 @@ public class ButtonFragment extends Fragment {
         try {
 
 
-            dbRef = FirebaseDatabase.getInstance().getReference().child("Lock").child("status");
+            dbRef = FirebaseDatabase.getInstance().getReference().child("Lock").child("status_mob");
 
-            ValueEventListener valueEventListener = new ValueEventListener()
-            {
+            ValueEventListener valueEventListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists())
-                    {
-                        if(dataSnapshot.getValue().toString().equalsIgnoreCase("true")){
-                            Toast.makeText(getContext(), "Door locked", Toast.LENGTH_SHORT).show();
+                    if (dataSnapshot.exists()) {
+                        if (dataSnapshot.getValue().toString().equalsIgnoreCase("true")) {
+                           // Toast.makeText(getContext(), "Door locked", Toast.LENGTH_SHORT).show();
+
+                            buttonLock.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.button_lock));
                             imageLock.setImageResource(R.drawable.padlock);
-                            Log.d(TAG,  "Door locked");
-                        }else{
-                            Toast.makeText(getContext(), "Door unlocked", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "Door locked");
+                        } else {
+                           // Toast.makeText(getContext(), "Door unlocked", Toast.LENGTH_SHORT).show();
                             imageLock.setImageResource(R.drawable.lock_open_alt);
-                            Log.d(TAG,  "Door unlocked");
+                            buttonLock.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.button_unlock));
+                            Log.d(TAG, "Door unlocked");
                         }
                     }
                 }
@@ -82,32 +84,34 @@ public class ButtonFragment extends Fragment {
             mSendEventListner = valueEventListener;
 
 
-        }catch (Exception e){
+        } catch (Exception e) {
         }
         return view;
     }
 
 
     private void buttonLock(View view) {
-      //  final RippleBackground rippleBackground=(RippleBackground)view.findViewById(R.id.content);
-        buttonLock = (Button) view.findViewById(R.id.button_lock);
+        //  final RippleBackground rippleBackground=(RippleBackground)view.findViewById(R.id.content);
+        buttonLock = (Button) view.findViewById(R.id.button_unlock);
         buttonLock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try{
-                   // rippleBackground.startRippleAnimation();
+                try {
+                    // rippleBackground.startRippleAnimation();
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Lock").child("status");
                     databaseReference.setValue(false, new DatabaseReference.CompletionListener() {
 
                         @Override
                         public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
-
-                           // rippleBackground.stopRippleAnimation();
+                           // Toast.makeText(getContext(), "Door unlocked", Toast.LENGTH_SHORT).show();
+                            imageLock.setImageResource(R.drawable.lock_open_alt);
+                            buttonLock.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.button_unlock));
+                           Log.d(TAG, "Door unlocked");
                         }
 
                     });
-                }catch (Exception e){
-                    Log.d(TAG,  e.getMessage());
+                } catch (Exception e) {
+                    Log.d(TAG, e.getMessage());
                 }
 
 
@@ -120,8 +124,9 @@ public class ButtonFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Toast.makeText(getContext(), "onDestroyView", Toast.LENGTH_SHORT).show();
+
         if (mSendEventListner != null) {
             dbRef.removeEventListener(mSendEventListner);
-        }    }
+        }
+    }
 }
