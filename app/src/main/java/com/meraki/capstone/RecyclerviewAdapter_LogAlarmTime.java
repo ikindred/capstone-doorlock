@@ -2,6 +2,7 @@ package com.meraki.capstone;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,14 @@ public class RecyclerviewAdapter_LogAlarmTime extends RecyclerView.Adapter<Recyc
 
 
         String[] data = usersList.get(position).toString().split("#");
-        holder.usersKey.setText("Key: "+data[0].trim());
+
+        if(data[0].trim().equalsIgnoreCase("Door Alarm")){
+            holder.usersKey.setText(data[0].trim());
+            holder.usersKey.setTextColor(Color.RED);
+        }else{
+            holder.usersKey.setText("Key: "+data[0].trim());
+        }
+
         holder.usersDate.setText(data[1].trim());
     }
 

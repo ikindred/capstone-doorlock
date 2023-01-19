@@ -1,34 +1,34 @@
 {
   "project_info": {
-    "project_number": "1097394194378",
-    "firebase_url": "https://lockme-74a89-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "lockme-74a89",
-    "storage_bucket": "lockme-74a89.appspot.com"
+    "project_number": "217641135818",
+    "firebase_url": "https://lockme-bcc11-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "lockme-bcc11",
+    "storage_bucket": "lockme-bcc11.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1097394194378:android:248606e91bf767cfac7133",
+        "mobilesdk_app_id": "1:217641135818:android:e9e65d6a31348bad2a0e33",
         "android_client_info": {
           "package_name": "com.meraki.capstone"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1097394194378-4ae9qado380e5efvu2vot7d90ovgc8lm.apps.googleusercontent.com",
+          "client_id": "217641135818-d2ufk3hen1r3k5uvn92lhv841ac7eep6.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAx9W01odv7HjHeVk-mKEuj__CN3CmjFjk"
+          "current_key": "AIzaSyCy1jwiRQutIKaWEp6_U0J80v0JNOm1V3c"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1097394194378-4ae9qado380e5efvu2vot7d90ovgc8lm.apps.googleusercontent.com",
+              "client_id": "217641135818-d2ufk3hen1r3k5uvn92lhv841ac7eep6.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

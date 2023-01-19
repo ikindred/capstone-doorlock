@@ -196,6 +196,8 @@ public class UserLogsFragment extends Fragment {
 
 
 
+
+
         } catch (Exception e) {
             Log.w(TAG, "Exception: " + e.getMessage());
         }

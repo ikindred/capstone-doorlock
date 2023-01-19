@@ -100,13 +100,15 @@ public class UserListFragment extends Fragment {
                     }
                     for (DataSnapshot postSnapshot : snapshot.getChildren()) {
 
-                        //  Log.w(TAG, "snapshot: " + postSnapshot.getKey());
+                         Log.w(TAG, "snapshot: " + postSnapshot.getKey());
 
                         final FB_Users fb_users = postSnapshot.getValue(FB_Users.class);
 
 
                         fb_users.setId(postSnapshot.getKey());
-                        taskList.add(fb_users);
+                        if(!postSnapshot.getKey().equalsIgnoreCase("user5")) {
+                            taskList.add(fb_users);
+                        }
 
                         recyclerviewAdapter_userInfo.setUsersList(taskList);
                         recyclerView.setAdapter(recyclerviewAdapter_userInfo);
