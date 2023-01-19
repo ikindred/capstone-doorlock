@@ -200,47 +200,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        DatabaseReference databaseReference_alarmtime = FirebaseDatabase.getInstance().getReference().child("Logs").child("alarmtime");
-//        databaseReference_alarmtime.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//
-//                if (!taskList2.isEmpty()) {
-//                    taskList2.clear();
-//                }
-//
-//                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
-//
-//                    taskList2.add(postSnapshot.getValue());
-//
-//                }
-//
-//                if (taskList2.get(taskList2.size() - 1).toString().contains("Door Alarm")) {
-//
-//                    if (lastLog.isEmpty()) {
-//                        lastLog = taskList2.get(taskList2.size() - 1).toString();
-//                        Log.w(TAG, "last_log: " + lastLog);
-//
-//                    } else if (!lastLog.isEmpty() && !lastLog.equals(taskList2.get(taskList2.size() - 1).toString())) {
-//                        lastLog = taskList2.get(taskList2.size() - 1).toString();
-//                        Log.e(TAG, "notify here: " + lastLog);
-//
-//                        String split[] = lastLog.split("#");
-//                        showNotification_message("Door Alarm", split[1]);
-//
-//                    }
-//
-//
-//                }
-//
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.w(TAG, "onCancelled: " + error.getMessage());
-//            }
-//        });
 
     }
 
@@ -254,43 +213,5 @@ public class MainActivity extends AppCompatActivity {
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
-
-//    public void showNotification_message(String title, String body) {
-//
-//        try {
-//            Log.i(TAG, "showNotification_message");
-//
-//
-//            Intent intent = new Intent(this, MainActivity.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-//
-//            int notificationId = 0070;
-//            String channelId = "meraki-7";
-//            int importance = NotificationManager.IMPORTANCE_HIGH;
-//            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-//
-//            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this, channelId)
-//                    .setSmallIcon(R.mipmap.ic_launcher_round)
-//                    .setContentTitle(title)
-//                    .setAutoCancel(true)
-//                    .setContentText(body)
-//                    .setSound(alarmSound)
-//                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//                    .setContentIntent(pendingIntent);
-//
-//            androidx.core.app.TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.this);
-//            stackBuilder.addNextIntent(intent);
-//
-//
-//            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-//            notificationManager.notify(notificationId, mBuilder.build());
-//
-//        } catch (Exception e) {
-//            Log.e(TAG, "showNotification_call: " + e.getMessage());
-//
-//        }
-//
-//    }
 
 }
