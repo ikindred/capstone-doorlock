@@ -22,6 +22,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -57,6 +58,10 @@ public class MainActivity extends AppCompatActivity {
     String lastLog = "";
 
     ProgressDialog dialog;
+    String mobileId = "";
+    String code = "";
+    String codedb = "";
+    boolean used = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,20 +82,67 @@ public class MainActivity extends AppCompatActivity {
         dialog = ProgressDialog.show(MainActivity.this, "",
                 "Loading. Please wait...", true);
 
+        String deviceId = Settings.Secure.getString(MainActivity.this.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+
         try {
             dialog.show();
             DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Init");
-            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            databaseReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                     final FB_Auth fb_auth = snapshot.getValue(FB_Auth.class);
 
-                    String code = mysharedRef.getString("code", "");
+                    code = mysharedRef.getString("code", "");
                     dialog.dismiss();
-                    if (code.equals(fb_auth.getUnitcode()) && fb_auth.isUsed() == true) {
-                        InitFragment();
+
+                    try {
+                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Init").child("mobileId");
+                        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                                mobileId = snapshot.getValue() + "";
+                                codedb = fb_auth.getUnitcode();
+                                used = fb_auth.isUsed();
+                                if (code.equals(fb_auth.getUnitcode()) && fb_auth.isUsed() == true) {
+
+                                    if (deviceId.equals(mobileId) && !deviceId.equals("null")) {
+
+                                        InitFragment();
+
+                                    } else if (!deviceId.equals(mobileId) && !deviceId.equals("null")) {
+                                        Toast.makeText(MainActivity.this, "Forced logout, another device already took this account", Toast.LENGTH_SHORT).show();
+
+                                        myEdit.putString("code", "");
+
+                                        myEdit.commit();
+
+
+
+                                        if(linAuth.getVisibility() == View.GONE){
+                                            linAuth.setVisibility(View.VISIBLE);
+                                            tabLayout.setVisibility(View.GONE);
+                                            viewPager2.setVisibility(View.GONE);
+
+                                        }
+                                    }
+                                }
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                dialog.dismiss();
+                                Toast.makeText(MainActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    } catch (Exception e) {
+
                     }
+
                 }
 
                 @Override
@@ -113,31 +165,41 @@ public class MainActivity extends AppCompatActivity {
 
                                 final FB_Auth fb_auth = snapshot.getValue(FB_Auth.class);
 
+
                                 if (edittext_code.getText().toString().equals(fb_auth.getUnitcode())) {
-                                    myEdit.putString("code", edittext_code.getText().toString());
 
-                                    myEdit.commit();
-                                    FirebaseDatabase.getInstance().getReference().child("Init").child("used").setValue(true);
+                                    if ((mobileId.equals("null") && used == false)) {
+                                        myEdit.putString("code", edittext_code.getText().toString());
 
-                                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                                    FB_Users fb_users = new FB_Users("Mobile App", "Mobile App", null, false);
+                                        myEdit.commit();
+                                        FirebaseDatabase.getInstance().getReference().child("Init").child("used").setValue(true);
 
-                                    databaseReference.child("Valid").child("user5").setValue(fb_users, new DatabaseReference.CompletionListener() {
+                                        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
-                                        @Override
-                                        public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+                                        FB_Users fb_users = new FB_Users("Mobile App", "Mobile App", null, false);
 
-                                            dialog.dismiss();
-                                            hideKeyboard(MainActivity.this);
-                                            InitFragment();
-                                        }
-                                    });
+                                        FirebaseDatabase.getInstance().getReference().child("Init").child("mobileId").setValue(deviceId);
+                                        databaseReference.child("Valid").child("user5").setValue(fb_users, new DatabaseReference.CompletionListener() {
+
+                                            @Override
+                                            public void onComplete(@Nullable DatabaseError error, @NonNull DatabaseReference ref) {
+
+                                                dialog.dismiss();
+                                                hideKeyboard(MainActivity.this);
+                                                InitFragment();
+                                            }
+                                        });
+                                    } else {
+                                        dialog.dismiss();
+                                        Toast.makeText(MainActivity.this, "Account already taken", Toast.LENGTH_SHORT).show();
+                                    }
 
 
                                 } else {
                                     dialog.dismiss();
                                     Toast.makeText(MainActivity.this, "Wrong Code", Toast.LENGTH_SHORT).show();
                                 }
+
 
                             }
 
@@ -200,6 +262,47 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+//        DatabaseReference databaseReference_alarmtime = FirebaseDatabase.getInstance().getReference().child("Logs").child("alarmtime");
+//        databaseReference_alarmtime.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//
+//                if (!taskList2.isEmpty()) {
+//                    taskList2.clear();
+//                }
+//
+//                for (DataSnapshot postSnapshot : snapshot.getChildren()) {
+//
+//                    taskList2.add(postSnapshot.getValue());
+//
+//                }
+//
+//                if (taskList2.get(taskList2.size() - 1).toString().contains("Door Alarm")) {
+//
+//                    if (lastLog.isEmpty()) {
+//                        lastLog = taskList2.get(taskList2.size() - 1).toString();
+//                        Log.w(TAG, "last_log: " + lastLog);
+//
+//                    } else if (!lastLog.isEmpty() && !lastLog.equals(taskList2.get(taskList2.size() - 1).toString())) {
+//                        lastLog = taskList2.get(taskList2.size() - 1).toString();
+//                        Log.e(TAG, "notify here: " + lastLog);
+//
+//                        String split[] = lastLog.split("#");
+//                        showNotification_message("Door Alarm", split[1]);
+//
+//                    }
+//
+//
+//                }
+//
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                Log.w(TAG, "onCancelled: " + error.getMessage());
+//            }
+//        });
 
     }
 
@@ -213,5 +316,43 @@ public class MainActivity extends AppCompatActivity {
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
+
+//    public void showNotification_message(String title, String body) {
+//
+//        try {
+//            Log.i(TAG, "showNotification_message");
+//
+//
+//            Intent intent = new Intent(this, MainActivity.class);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+//
+//            int notificationId = 0070;
+//            String channelId = "meraki-7";
+//            int importance = NotificationManager.IMPORTANCE_HIGH;
+//            Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//
+//            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MainActivity.this, channelId)
+//                    .setSmallIcon(R.mipmap.ic_launcher_round)
+//                    .setContentTitle(title)
+//                    .setAutoCancel(true)
+//                    .setContentText(body)
+//                    .setSound(alarmSound)
+//                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//                    .setContentIntent(pendingIntent);
+//
+//            androidx.core.app.TaskStackBuilder stackBuilder = TaskStackBuilder.create(MainActivity.this);
+//            stackBuilder.addNextIntent(intent);
+//
+//
+//            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+//            notificationManager.notify(notificationId, mBuilder.build());
+//
+//        } catch (Exception e) {
+//            Log.e(TAG, "showNotification_call: " + e.getMessage());
+//
+//        }
+//
+//    }
 
 }
